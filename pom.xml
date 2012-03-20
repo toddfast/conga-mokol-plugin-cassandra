@@ -70,11 +70,6 @@
 
 	<repositories>
 		<repository>
-			<id>riptano</id>
-			<name>riptano</name>
-			<url>http://mvn.riptano.com/content/repositories/public</url>
-		</repository>
-		<repository>
 			<id>lib</id>
 			<name>lib</name>
 			<releases>
@@ -84,7 +79,12 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<url>file://${project.basedir}/../lib</url>
+			<url>file://${project.basedir}/lib</url>
+		</repository>
+		<repository>
+			<id>riptano</id>
+			<name>riptano</name>
+			<url>http://mvn.riptano.com/content/repositories/public</url>
 		</repository>
 		<repository>
 			<id>maven.scale7.org</id>
