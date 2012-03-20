@@ -1,0 +1,122 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.conga.tools.mokol</groupId>
+	<artifactId>conga-mokol-plugin-cassandra</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>conga-mokol-plugin-cassandra</name>
+	<url>http://maven.apache.org</url>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<!--
+							<relocations>
+								<relocation>
+									<pattern>jline</pattern>
+									<shadedPattern>com.conga.lib.jline</shadedPattern>
+								</relocation>
+							</relocations>
+							-->
+
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>${app.main.class}</mainClass>
+									<manifestEntries>
+										<!--
+										<Main-Class>${app.main.class}</Main-Class>
+										<X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>
+										<X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
+										-->
+									</manifestEntries>
+								</transformer>
+							</transformers>
+
+						</configuration>
+					</execution>
+				</executions>
+
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>riptano</id>
+			<name>riptano</name>
+			<url>http://mvn.riptano.com/content/repositories/public</url>
+		</repository>
+		<repository>
+			<id>lib</id>
+			<name>lib</name>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>ignore</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<url>file://${project.basedir}/../lib</url>
+		</repository>
+		<repository>
+			<id>maven.scale7.org</id>
+			<name>Scale7 Maven Repo</name>
+			<url>https://github.com/s7/mvnrepo/raw/master</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>conga-mokol</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.scale7</groupId>
+			<artifactId>scale7-pelops</artifactId>
+			<version>1.2-0.8.x</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cassandra.cql</groupId>
+			<artifactId>apache-cassandra-cql</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+	</dependencies>
+</project>
