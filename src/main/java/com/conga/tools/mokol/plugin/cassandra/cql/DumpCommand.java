@@ -29,7 +29,7 @@ import org.scale7.cassandra.pelops.Selector;
 	value="Dumps the column family specified as the single argument",
 	examples={
 		@Example(
-			value="dump <column family>",
+			value="<column family>",
 			description="")
 	}
 )

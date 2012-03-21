@@ -6,7 +6,6 @@ import com.conga.tools.mokol.plugin.cassandra.cql.ConnectCommand;
 import com.conga.tools.mokol.plugin.cassandra.cql.DisconnectCommand;
 import com.conga.tools.mokol.spi.AbstractPlugin;
 import com.conga.tools.mokol.spi.CommandClassFactory;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -29,6 +28,7 @@ public class SchemaPlugin extends AbstractPlugin {
 	 *
 	 *
 	 */
+	@Override
 	protected Map<String,Object> getEnvironment() {
 		return super.getEnvironment();
 	}
@@ -38,6 +38,7 @@ public class SchemaPlugin extends AbstractPlugin {
 	 *
 	 *
 	 */
+	@Override
 	protected <T> T getEnvironmentValue(String key, Class<T> clazz) {
 		return super.getEnvironmentValue(key,clazz);
 	}
@@ -47,6 +48,7 @@ public class SchemaPlugin extends AbstractPlugin {
 	 *
 	 *
 	 */
+	@Override
 	protected void putEnvironmentValue(String key, Object value) {
 		super.putEnvironmentValue(key,value);
 	}
@@ -56,6 +58,7 @@ public class SchemaPlugin extends AbstractPlugin {
 	 *
 	 *
 	 */
+	@Override
 	protected void removeEnvironmentValue(String key) {
 		super.removeEnvironmentValue(key);
 	}

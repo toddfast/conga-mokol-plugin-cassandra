@@ -33,15 +33,22 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<!--
+							<artifactSet>
+								<includes>
+									<include>org.apache.cassandra.cql:apache-cassandra-cql</include>
+									<include>org.scale7:scale7-pelops</include>
+								</includes>
+							</artifactSet>
 							<relocations>
 								<relocation>
-									<pattern>jline</pattern>
-									<shadedPattern>com.conga.lib.jline</shadedPattern>
+									<pattern>org.apache.cassandra</pattern>
+									<shadedPattern>com.conga.tools.mokol.plugin.cassandra.lib.org.apache.cassandra</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.scale7</pattern>
+									<shadedPattern>com.conga.tools.mokol.plugin.cassandra.lib.org.scale7</shadedPattern>
 								</relocation>
 							</relocations>
-							-->
-
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -55,7 +62,6 @@
 						</configuration>
 					</execution>
 				</executions>
-
 			</plugin>
 		</plugins>
 	</build>
@@ -100,11 +106,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>conga-mokol</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.scale7</groupId>
 			<artifactId>scale7-pelops</artifactId>
 			<version>1.2-0.8.x</version>
@@ -113,6 +114,11 @@
 			<groupId>org.apache.cassandra.cql</groupId>
 			<artifactId>apache-cassandra-cql</artifactId>
 			<version>1.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>conga-mokol</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -2,8 +2,8 @@ package com.conga.tools.mokol.plugin.cassandra.cql;
 
 import com.conga.tools.mokol.Shell;
 import com.conga.tools.mokol.ShellException;
+import com.conga.tools.mokol.spi.AbstractPlugin;
 import com.conga.tools.mokol.spi.CommandClassFactory;
-import com.conga.tools.mokol.spi.Plugin;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,7 +12,7 @@ import java.util.TreeMap;
  *
  * @author Todd Fast
  */
-public class CQLPlugin implements Plugin {
+public class CQLPlugin extends AbstractPlugin {
 
 	/**
 	 *
@@ -38,8 +38,9 @@ public class CQLPlugin implements Plugin {
 	 *
 	 *
 	 */
-	/*pkg*/ Map<String,Object> getEnvironment() {
-		return Collections.unmodifiableMap(_getEnvironment());
+	@Override
+	protected Map<String,Object> getEnvironment() {
+		return super.getEnvironment();
 	}
 
 
@@ -47,8 +48,9 @@ public class CQLPlugin implements Plugin {
 	 *
 	 *
 	 */
-	private Map<String,Object> _getEnvironment() {
-		return environment;
+	@Override
+	protected <T> T getEnvironmentValue(String key, Class<T> clazz) {
+		return super.getEnvironmentValue(key,clazz);
 	}
 
 
@@ -56,8 +58,9 @@ public class CQLPlugin implements Plugin {
 	 *
 	 *
 	 */
-	/*pkg*/ <T> T getEnvironmentValue(String key, Class<T> clazz) {
-		return clazz.cast(_getEnvironment().get(key));
+	@Override
+	protected void putEnvironmentValue(String key, Object value) {
+		super.putEnvironmentValue(key,value);
 	}
 
 
@@ -65,27 +68,9 @@ public class CQLPlugin implements Plugin {
 	 *
 	 *
 	 */
-	/*pkg*/ void putEnvironmentValue(String key, Object value) {
-		if (key==null || key.trim().isEmpty()) {
-			throw new IllegalArgumentException("Parameter \"key\" cannot be "+
-				"null or an empty string");
-		}
-
-		_getEnvironment().put(key,value);
-	}
-
-
-	/**
-	 *
-	 *
-	 */
-	/*pkg*/ void removeEnvironmentValue(String key) {
-		if (key==null || key.trim().isEmpty()) {
-			throw new IllegalArgumentException("Parameter \"key\" cannot be "+
-				"null or an empty string");
-		}
-
-		_getEnvironment().remove(key);
+	@Override
+	protected void removeEnvironmentValue(String key) {
+		super.removeEnvironmentValue(key);
 	}
 
 
