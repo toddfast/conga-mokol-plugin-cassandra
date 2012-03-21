@@ -1,0 +1,2 @@
+com.conga.tools.mokol.plugin.cassandra.cql.CQLPlugin
+com.conga.tools.mokol.plugin.cassandra.cql.schema.SchemaPlugin

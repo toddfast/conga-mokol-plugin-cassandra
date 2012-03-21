@@ -1,8 +1,7 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.platform.util.Preconditions;
-import com.conga.platform.util.StringUtil;
 import com.conga.tools.mokol.plugin.cassandra.ParsedCassandraURL;
+import com.conga.tools.mokol.util.StringUtil;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -181,7 +180,12 @@ public class CQLLoader {
 	 * 
 	 */
 	public synchronized void setLoadRelativeToClass(Class clazz) {
-		Preconditions.argumentNotNull(clazz,"clazz");
+
+		if (clazz==null) {
+			throw new IllegalArgumentException("Parameter \"clazz\" "+
+				"cannot be null");
+		}
+
 		relativeToClass=clazz;
 		defaultClassLoader=clazz.getClassLoader();
 
@@ -888,8 +892,18 @@ public class CQLLoader {
 			throw new IllegalStateException("Connection has not been opened");
 		}
 
-		Preconditions.collectionItemsAreValues(cqlStatements,
-			"cqlStatements");
+		// Check the CQL statements for basic validity
+		if (cqlStatements==null || cqlStatements.isEmpty()) {
+			throw new IllegalArgumentException(
+				"Parameter \"cqlStatements\" cannot be null or empty");
+		}
+
+		for (String cql: cqlStatements) {
+			if (cql==null || cql.trim().isEmpty()) {
+				throw new IllegalArgumentException(
+					"None of the provided CQL statements can be null or empty");
+			}
+		}
 
 		PreparedStatement statement;
 		for (String cql: cqlStatements) {

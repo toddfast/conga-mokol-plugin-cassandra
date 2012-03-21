@@ -1,9 +1,10 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.Shell;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.CommandClassFactory;
-import com.conga.tools.mokol.plugin.cassandra.cql.AbstractCQLCommand;
+import com.conga.tools.mokol.spi.CommandClassFactory;
+import com.conga.tools.mokol.spi.CommandContext;
+import com.conga.tools.mokol.spi.annotation.Example;
+import com.conga.tools.mokol.spi.annotation.Help;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -12,6 +13,15 @@ import java.util.List;
  *
  * @author Todd Fast
  */
+@Help(
+	value="Connects to a Cassandra node",
+	examples={
+		@Example(value="<server>:<port>/<keyspace>",
+			description="Connect with the minimum JDBC URL"),
+		@Example(value="[[jdbc:cassandra:]<user>/<password>@]<server>:<port>/<keyspace>", 
+			description="Connect with a full JDBC URL")
+	}
+)
 public class ConnectCommand extends AbstractCQLCommand {
 
 	/**
@@ -19,7 +29,7 @@ public class ConnectCommand extends AbstractCQLCommand {
 	 * 
 	 */
 	@Override
-	public void execute(Shell.CommandContext context, List<String> args)
+	public void doExecute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		try {
@@ -60,9 +70,9 @@ public class ConnectCommand extends AbstractCQLCommand {
 			loader.openConnection();
 
 			// Remember this in the environment
-//			context.getShell().getEnvironment().put(
+//			((CQLPlugin)getPlugin(context)).putEnvironmentValue(
 //				Environment.ENV_RESOURCE_ROOT,resourceRoot);
-			context.getShell().getEnvironment().put(
+			((CQLPlugin)getPlugin(context)).putEnvironmentValue(
 				ENV_CQL_LOADER_INSTANCE,loader);
 
 			updateStepEnvironment(context);
@@ -81,21 +91,17 @@ public class ConnectCommand extends AbstractCQLCommand {
 			throw new ShellException("Could not load CQL resources",e);
 		}
 		catch (IndexOutOfBoundsException e) {
-			wrongNumberOfParameters(2,2,args.size());
+			throw new IllegalArgumentException(
+				"Expected a JDBC URL as the only argument");
 		}
 	}
 
 
-	/**
-	 *
-	 * 
-	 */
-	public String getUsage() {
-		return "Connect to a Cassandra node. "+
-			"Usage: connect [[jdbc:cassandra:]<user>/<password>@]<server>:<port>/<keyspace>";
-	}
 
 
+	////////////////////////////////////////////////////////////////////////////
+	// Fields
+	////////////////////////////////////////////////////////////////////////////
 
 	private static final String PROMPT="[{"+ENV_CQL_LOADER_INSTANCE+"%s}] ";
 }

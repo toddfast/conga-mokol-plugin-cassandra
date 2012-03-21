@@ -1,12 +1,11 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.AnnotatedCommand;
-import com.conga.tools.mokol.plugin.cassandra.cql.AbstractCQLCommand;
-import com.conga.tools.mokol.Shell.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.annotation.Help;
-import com.conga.tools.mokol.annotation.Switch;
 import com.conga.tools.mokol.plugin.cassandra.ParsedCassandraURL;
+import com.conga.tools.mokol.spi.AnnotatedCommand;
+import com.conga.tools.mokol.spi.CommandContext;
+import com.conga.tools.mokol.spi.annotation.Help;
+import com.conga.tools.mokol.spi.annotation.Switch;
 import java.util.List;
 import org.scale7.cassandra.pelops.Cluster;
 import org.scale7.cassandra.pelops.Mutator;
@@ -21,7 +20,7 @@ import org.scale7.cassandra.pelops.pool.CommonsBackedPool;
  * 
  * @author Todd Fast
  */
-public abstract class AbstractPelopsCommand extends AnnotatedCommand {
+public abstract class AbstractPelopsCommand extends AbstractCQLCommand {
 
 	/**
 	 *
@@ -40,10 +39,11 @@ public abstract class AbstractPelopsCommand extends AnnotatedCommand {
 	 */
 	protected void initializePelops(CommandContext context)
 			throws ShellException {
+
 		setPoolName(context.getCommandAlias());
 
 		ParsedCassandraURL parsedURL=
-			AbstractCQLCommand.getLoader(context).getParsedURL();
+			getLoader(context).getParsedURL();
 
 System.out.format("Cassandra instance: server = %s, port %d",
 	parsedURL.getServer(),parsedURL.getPort());
@@ -57,7 +57,7 @@ System.out.format("Cassandra instance: server = %s, port %d",
 		OperandPolicy operandPolicy=new OperandPolicy();
 		operandPolicy.setMaxOpRetries(5);
 
-		Pelops.addPool(poolName,cluster,parsedURL.getKeyspace(),
+		Pelops.addPool(getPoolName(),cluster,parsedURL.getKeyspace(),
 			policy,operandPolicy);
 
 //		IThriftPool pool=Pelops.getDbConnPool(getPoolName());

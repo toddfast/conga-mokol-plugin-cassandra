@@ -1,10 +1,9 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.plugin.cassandra.cql.AbstractCQLCommand;
-import com.conga.tools.mokol.Shell.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.platform.util.Triple;
-import com.conga.platform.util.TypeConverter;
+import com.conga.tools.mokol.spi.CommandContext;
+import com.conga.tools.mokol.util.ByteArrayUtil;
+import com.conga.tools.mokol.util.TypeConverter;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.cassandra.cql.jdbc.CResultSet;
 import org.apache.cassandra.cql.jdbc.TypedColumn;
-import org.apache.cassandra.utils.ByteBufferUtil;
+import org.scale7.cassandra.pelops.Bytes;
 
 /**
  *
@@ -34,7 +33,7 @@ public class ExportCommand extends AbstractCQLCommand {
 	 *
 	 */
 	@Override
-	public void execute(CommandContext context, List<String> args)
+	public void doExecute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		CQLLoader loader=getLoader(context);
@@ -156,21 +155,23 @@ public class ExportCommand extends AbstractCQLCommand {
 
 				String rowKey=null;
 				try {
-					rowKey=ByteBufferUtil.string(
-						ByteBuffer.wrap(resultSet.getKey()));
+	//				final Charset charset=Charset.forName("UTF-8");
+	//				rowKey=charset.newDecoder().decode(
+	//					ByteBuffer.wrap(resultSet.getKey())).toString();
+					rowKey=Bytes.toUTF8(resultSet.getKey());
 				}
-				catch (CharacterCodingException e) {
-					rowKey=ByteBuffer.wrap(resultSet.getKey()).toString();
+				catch (Exception e) {
+					rowKey=ByteArrayUtil.toHex(resultSet.getKey());
 				}
 
-				List<Triple<String,String,String>> columns=
-					new ArrayList<Triple<String,String,String>>();
+				List<ColumnMetadata> columns=
+					new ArrayList<ColumnMetadata>();
 
 				// Add a column for the row key
 				final String KEY_NAME="rowKey";
 				final String KEY_TYPE="(raw bytes as utf8)";
 				columns.add(
-					new Triple<String,String,String>(
+					new ColumnMetadata(
 						KEY_NAME,
 						KEY_TYPE,
 						rowKey));
@@ -192,8 +193,8 @@ public class ExportCommand extends AbstractCQLCommand {
 							typedColumn.getRawColumn().getValue()).getLong();
 					}
 
-					Triple<String,String,String> column=
-						new Triple<String,String,String>(
+					ColumnMetadata column=
+						new ColumnMetadata(
 							metadata.getColumnName(i),
 							metadata.getColumnTypeName(i),
 							value.toString());
@@ -202,7 +203,7 @@ public class ExportCommand extends AbstractCQLCommand {
 				}
 
 				int count=0;
-				for (Triple<String,String,String> column: columns) {
+				for (ColumnMetadata column: columns) {
 
 					if (count>0) {
 						metadataWriter.append("\t");

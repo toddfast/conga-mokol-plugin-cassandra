@@ -1,11 +1,11 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.plugin.cassandra.cql.AbstractCQLCommand;
-import com.conga.tools.mokol.Shell.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.Command;
-import com.conga.tools.mokol.CommandFactory;
-import com.conga.platform.util.Preconditions;
+import com.conga.tools.mokol.spi.Command;
+import com.conga.tools.mokol.spi.CommandContext;
+import com.conga.tools.mokol.spi.CommandFactory;
+import com.conga.tools.mokol.spi.annotation.Example;
+import com.conga.tools.mokol.spi.annotation.Help;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -15,6 +15,15 @@ import java.util.List;
  * 
  * @author Todd Fast
  */
+@Help(
+	value="Execute a CQL mutation statement",
+	examples={
+//		@Example(
+//			value="...",
+//			description="Make an update"
+//		)
+	}
+)
 public class CQLUpdateCommand extends AbstractCQLCommand {
 
 	/**
@@ -23,7 +32,12 @@ public class CQLUpdateCommand extends AbstractCQLCommand {
 	 */
 	public CQLUpdateCommand(Verb verb) {
 		super();
-		Preconditions.argumentNotNull(verb,"verb");
+
+		if (verb==null) {
+			throw new IllegalArgumentException(
+				"Parameter \"verb\" cannot be null");
+		}
+
 		this.verb=verb;
 	}
 
@@ -42,7 +56,7 @@ public class CQLUpdateCommand extends AbstractCQLCommand {
 	 *
 	 */
 	@Override
-	public void execute(CommandContext context, List<String> args)
+	public void doExecute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		CQLLoader loader=getLoader(context);
@@ -53,20 +67,9 @@ public class CQLUpdateCommand extends AbstractCQLCommand {
 		String switchName=null;
 
 		for (String arg: args) {
-			if (switchName!=null) {
-				handleSwitch(switchName,arg);
-				switchName=null;
-			}
-			else
-			if (arg.startsWith("--")) {
-				switchName=arg.substring(2);
-				// The next arg will be the switch value
-			}
-			else {
-				cqlBuilder
-					.append(" ")
-					.append(arg);
-			}
+			cqlBuilder
+				.append(" ")
+				.append(arg);
 		}
 
 		String cql=cqlBuilder.toString();
@@ -97,30 +100,6 @@ public class CQLUpdateCommand extends AbstractCQLCommand {
 	 *
 	 *
 	 */
-	private void handleSwitch(String switchName, String switchValue) {
-//		if (switchName.equals("t") || switchName.equals("truncate")) {
-//			setNameTruncateLength(TypeConverter.asInt(switchValue));
-//			setValueTruncateLength(TypeConverter.asInt(switchValue));
-//		}
-//		else
-//		if (switchName.equals("tv") || switchName.equals("truncateValue")) {
-//			setValueTruncateLength(TypeConverter.asInt(switchValue));
-//		}
-//		else
-//		if (switchName.equals("tn") || switchName.equals("truncateName")) {
-//			setNameTruncateLength(TypeConverter.asInt(switchValue));
-//		}
-//		else
-//		if (switchName.equals("e") || switchName.equals("escape")) {
-//			setReplaceEscapedChars(TypeConverter.asBoolean(switchValue));
-//		}
-	}
-
-
-	/**
-	 *
-	 *
-	 */
 	public String getUsage() {
 		return "Execute a CQL "+getVerb()+" statement. Switches: "+
 			"none";
@@ -138,7 +117,6 @@ public class CQLUpdateCommand extends AbstractCQLCommand {
 	 *
 	 */
 	public static enum Verb {
-		INSERT,
 		UPDATE,
 		DELETE
 	}

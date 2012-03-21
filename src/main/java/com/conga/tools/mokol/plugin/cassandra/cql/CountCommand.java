@@ -1,14 +1,11 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.plugin.cassandra.cql.AbstractPelopsCommand;
-import com.conga.tools.mokol.Shell.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.annotation.Help;
-import com.conga.tools.mokol.annotation.Switch;
-import com.conga.tools.mokol.plugin.cassandra.ParsedCassandraURL;
-import com.conga.platform.util.Crypto;
+import com.conga.tools.mokol.spi.CommandContext;
+import com.conga.tools.mokol.spi.annotation.Help;
+import com.conga.tools.mokol.spi.annotation.Switch;
+import com.conga.tools.mokol.util.ByteArrayUtil;
 import java.util.List;
-import com.conga.platform.util.Timer;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
@@ -35,19 +32,22 @@ public class CountCommand extends AbstractPelopsCommand {
 
 		super.doExecute(context,args);
 
-		Timer timer=Timer.begin();
+		long startTime=System.currentTimeMillis();
 
 		String columnFamily=null;
+
 		for (String arg: args) {
 			if (columnFamily!=null) {
-				super.wrongNumberOfParameters(1,1,2);
+				throw new IllegalArgumentException("Expected the column "+
+					"family as a single argument");
 			}
 
 			columnFamily=arg;
 		}
 
 		if (columnFamily==null || columnFamily.trim().isEmpty()) {
-			super.wrongNumberOfParameters(1,1,0);
+			throw new IllegalArgumentException("Expected the column "+
+				"family as a single argument");
 		}
 
 		int numRows=0;
@@ -67,7 +67,7 @@ public class CountCommand extends AbstractPelopsCommand {
 			}
 		}
 		catch (Exception e) {
-			throw new RuntimeException(
+			throw new ShellException(
 				"Failed to count column family \""+columnFamily+"\": "+
 				e.getMessage(),e);
 		}
@@ -75,7 +75,7 @@ public class CountCommand extends AbstractPelopsCommand {
 			// Finish off the status output
 			context.printf("\n");
 			context.printf("%d rows counted in %fms.\n\n",numRows,
-				Timer.toMillis(timer.stop()));
+				(System.currentTimeMillis()-startTime));
 		}
 
 
@@ -155,7 +155,7 @@ public class CountCommand extends AbstractPelopsCommand {
 //			ByteBufferUtil.string(ByteBuffer.wrap(rowKeyBytes));
 		}
 		catch (Exception e) {
-			rowKey=Crypto.toHex(rowKeyBytes.toByteArray());
+			rowKey=ByteArrayUtil.toHex(rowKeyBytes.toByteArray());
 		}
 
 		int maxNameWidth=Math.max(6,rowKey.length());

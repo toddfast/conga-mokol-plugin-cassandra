@@ -1,12 +1,11 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.plugin.cassandra.cql.AbstractCQLCommand;
-import com.conga.tools.mokol.Shell.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.annotation.Help;
-import com.conga.tools.mokol.annotation.Switch;
 import com.conga.tools.mokol.plugin.cassandra.ParsedCassandraURL;
-import com.conga.platform.util.TypeConverter;
+import com.conga.tools.mokol.spi.CommandContext;
+import com.conga.tools.mokol.spi.annotation.Example;
+import com.conga.tools.mokol.spi.annotation.Help;
+import com.conga.tools.mokol.spi.annotation.Switch;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
@@ -19,19 +18,21 @@ import java.util.Map.Entry;
 import org.apache.cassandra.thrift.Column;
 import org.apache.cassandra.thrift.ConsistencyLevel;
 import org.scale7.cassandra.pelops.Bytes;
-import org.scale7.cassandra.pelops.Cluster;
-import org.scale7.cassandra.pelops.OperandPolicy;
-import org.scale7.cassandra.pelops.Pelops;
 import org.scale7.cassandra.pelops.Selector;
-import org.scale7.cassandra.pelops.pool.CommonsBackedPool.Policy;
-import com.conga.platform.util.Timer;
 
 /**
  *
  * 
  * @author Todd Fast
  */
-@Help("Dumps the column family specified as the single argument")
+@Help(
+	value="Dumps the column family specified as the single argument",
+	examples={
+		@Example(
+			value="dump <column family>",
+			description="")
+	}
+)
 public class DumpCommand extends AbstractPelopsCommand {
 
 	/**
@@ -44,29 +45,19 @@ public class DumpCommand extends AbstractPelopsCommand {
 
 		super.doExecute(context,args);
 
-		Timer timer=Timer.begin();
+		long startTime=System.currentTimeMillis();
 
 		String columnFamily=null;
 
 		String switchName=null;
 
 		for (String arg: args) {
-//			if (switchName!=null) {
-//				handleSwitch(switchName,arg);
-//				switchName=null;
-//			}
-//			else
-//			if (arg.startsWith("--")) {
-//				switchName=arg.substring(2);
-//				// The next arg will be the switch value
-//			}
-//			else {
-				if (columnFamily!=null) {
-					super.wrongNumberOfParameters(1,1,2);
-				}
+			if (columnFamily!=null) {
+				throw new IllegalArgumentException("This command requires "+
+					"a single argument for column family");
+			}
 
-				columnFamily=arg;
-//			}
+			columnFamily=arg;
 		}
 
 		if (getDataFileName()==null
@@ -76,7 +67,8 @@ public class DumpCommand extends AbstractPelopsCommand {
 		}
 
 		if (columnFamily==null) {
-			super.wrongNumberOfParameters(1,1,0);
+			throw new IllegalArgumentException("This command requires "+
+				"a single argument for column family");
 		}
 
 		final String COLUMN_FAMILY=columnFamily;
@@ -94,7 +86,7 @@ public class DumpCommand extends AbstractPelopsCommand {
 			context.printf("Dumping column family \"%s\"\n",COLUMN_FAMILY);
 
 			ParsedCassandraURL parsedURL=
-				AbstractCQLCommand.getLoader(context).getParsedURL();
+				getLoader(context).getParsedURL();
 
 			Selector selector=createSelector();
 
@@ -186,7 +178,7 @@ public class DumpCommand extends AbstractPelopsCommand {
 			// Finish off the status output
 			context.printf("\n");
 			context.printf("%d rows dumped in %fms.\n\n",numRows,
-				Timer.toMillis(timer.stop()));
+				(System.currentTimeMillis()-startTime));
 		}
 	}
 

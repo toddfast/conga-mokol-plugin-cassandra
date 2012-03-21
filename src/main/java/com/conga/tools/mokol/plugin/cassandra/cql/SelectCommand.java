@@ -1,14 +1,11 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.AnnotatedCommand;
-import com.conga.tools.mokol.Shell.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.annotation.Help;
-import com.conga.tools.mokol.annotation.Switch;
-import com.conga.platform.util.Crypto;
-import com.conga.platform.util.Triple;
+import com.conga.tools.mokol.spi.CommandContext;
+import com.conga.tools.mokol.spi.annotation.Help;
+import com.conga.tools.mokol.spi.annotation.Switch;
+import com.conga.tools.mokol.util.ByteArrayUtil;
 import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
@@ -17,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.cassandra.cql.jdbc.CResultSet;
 import org.apache.cassandra.cql.jdbc.TypedColumn;
-import org.apache.cassandra.utils.ByteBufferUtil;
+import org.scale7.cassandra.pelops.Bytes;
 
 /**
  *
@@ -25,7 +22,7 @@ import org.apache.cassandra.utils.ByteBufferUtil;
  * @author Todd Fast
  */
 @Help("Execute a CQL select statement")
-public class SelectCommand extends AnnotatedCommand {
+public class SelectCommand extends AbstractCQLCommand {
 
 	/**
 	 *
@@ -35,7 +32,7 @@ public class SelectCommand extends AnnotatedCommand {
 	public void doExecute(CommandContext context, List<String> args)
 			throws ShellException {
 
-		CQLLoader loader=AbstractCQLCommand.getLoader(context);
+		CQLLoader loader=getLoader(context);
 
 		StringBuilder cqlBuilder=new StringBuilder("select");
 
@@ -66,7 +63,7 @@ public class SelectCommand extends AnnotatedCommand {
 			}
 		}
 		catch (Exception e) {
-			throw new RuntimeException(
+			throw new ShellException(
 				"Failed to execute the CQL query \""+cql+"\": "+
 				e.getMessage(),e);
 		}
@@ -95,23 +92,23 @@ public class SelectCommand extends AnnotatedCommand {
 
 			String rowKey=null;
 			try {
-				rowKey=ByteBufferUtil.string(
-					ByteBuffer.wrap(resultSet.getKey()));
+//				final Charset charset=Charset.forName("UTF-8");
+//				rowKey=charset.newDecoder().decode(
+//					ByteBuffer.wrap(resultSet.getKey())).toString();
+				rowKey=Bytes.toUTF8(resultSet.getKey());
 			}
-			catch (CharacterCodingException e) {
-//				rowKey=ByteBuffer.wrap(resultSet.getKey()).toString();
-				rowKey=Crypto.toHex(resultSet.getKey());
+			catch (Exception e) {
+				rowKey=ByteArrayUtil.toHex(resultSet.getKey());
 			}
 
-			List<Triple<String,String,String>> columns=
-				new ArrayList<Triple<String,String,String>>();
+			List<ColumnMetadata> columns=new ArrayList<ColumnMetadata>();
 
 			// Add a column for the row key
 			final String KEY_NAME="rowKey";
 			final String KEY_TYPE="(raw bytes as utf8)";
 
 			columns.add(
-				new Triple<String,String,String>(
+				new ColumnMetadata(
 					KEY_NAME,
 					KEY_TYPE,
 					rowKey));
@@ -143,7 +140,7 @@ public class SelectCommand extends AnnotatedCommand {
 					if (value instanceof ByteBuffer) {
 						// Just raw bytes; convert to hex
 						TypedColumn typedColumn=resultSet.getColumn(i-1);
-						stringValue=Crypto.toHex(
+						stringValue=ByteArrayUtil.toHex(
 							typedColumn.getRawColumn().getValue());
 					}
 					else {
@@ -151,11 +148,10 @@ public class SelectCommand extends AnnotatedCommand {
 					}
 				}
 
-				Triple<String,String,String> column=
-					new Triple<String,String,String>(
-						metadata.getColumnName(i),
-						metadata.getColumnTypeName(i),
-						stringValue);
+				ColumnMetadata column=new ColumnMetadata(
+					metadata.getColumnName(i),
+					metadata.getColumnTypeName(i),
+					stringValue);
 
 				maxNameWidth=Math.max(maxNameWidth,column.get1().length());
 				maxTypeWidth=Math.max(maxTypeWidth,column.get2().length());
@@ -164,7 +160,7 @@ public class SelectCommand extends AnnotatedCommand {
 			}
 
 			// Print all the columns
-			for (Triple<String,String,String> column: columns) {
+			for (ColumnMetadata column: columns) {
 
 				String format="%d => "+
 					"%"+maxNameWidth+"s"+

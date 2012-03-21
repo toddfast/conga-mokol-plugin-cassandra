@@ -1,8 +1,8 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.Shell;
 import com.conga.tools.mokol.ShellException;
 import com.conga.tools.mokol.plugin.cassandra.CassandraEnvironment;
+import com.conga.tools.mokol.spi.CommandContext;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -17,18 +17,19 @@ public class DisconnectCommand extends AbstractCQLCommand {
 	 * 
 	 */
 	@Override
-	public void execute(Shell.CommandContext context,List<String> args)
+	public void doExecute(CommandContext context,List<String> args)
 			throws ShellException {
 		try {
 			CQLLoader loader=getLoader(context);
 			if (loader!=null) {
 				loader.closeConnection();
 
-				context.getShell().getEnvironment().remove(
+				CQLPlugin plugin=((CQLPlugin)getPlugin(context));
+				plugin.removeEnvironmentValue(
 					ENV_CQL_LOADER_INSTANCE);
-				context.getShell().getEnvironment().remove(
+				plugin.removeEnvironmentValue(
 					ENV_STEP);
-				context.getShell().getEnvironment().remove(
+				plugin.removeEnvironmentValue(
 					CassandraEnvironment.ENV_RESOURCE_ROOT);
 
 				context.getShell().popPromptFormat();
