@@ -42,8 +42,18 @@ public class CQLLoader {
 	 */
 	@Override
 	public String toString() {
-		String result=getURL();
-		return result;
+		ParsedCassandraURL url=getParsedURL();
+		StringBuilder result=new StringBuilder();
+		result
+			.append(url.getUser())
+			.append("@")
+			.append(url.getServer())
+			.append(":")
+			.append(url.getPort())
+			.append("/")
+			.append(url.getKeyspace());
+
+		return result.toString();
 	}
 
 
@@ -369,32 +379,6 @@ public class CQLLoader {
 	}
 
 
-//	/**
-//	 *
-//	 *
-//	 */
-//	private void ensureStep(Direction direction) {
-//		int stepNumber=getCurrentStep();
-//		switch (direction) {
-//			case UP:
-//				if (stepNumber==UNSET_STEP) {
-//					stepNumber=0;
-//					setCurrentStep(stepNumber);
-//				}
-//
-//				break;
-//
-//			case DOWN:
-//				if (stepNumber==UNSET_STEP || (stepNumber >= getNumSteps())) {
-//					stepNumber=getNumSteps()-1;
-//					setCurrentStep(stepNumber);
-//				}
-//
-//				break;
-//		}
-//	}
-
-
 	/**
 	 *
 	 *
@@ -527,48 +511,6 @@ public class CQLLoader {
 	}
 
 
-//	/**
-//	 *
-//	 *
-//	 */
-//	public synchronized List<String> getCurrentStepStatements() {
-//		int stepNumber=getCurrentStep();
-//		if (stepNumber==UNSET_STEP)
-//			throw new IllegalStateException("The step number has not been set");
-//
-//		List<List<String>> statements=statementsRef.get();
-//		if (statements==null
-//				|| stepNumber < 0
-//				|| stepNumber >= statements.size()) {
-//			return null;
-//		}
-//		else {
-//			return statements.get(stepNumber);
-//		}
-//	}
-
-
-//	/**
-//	 *
-//	 *
-//	 */
-//	public synchronized List<String> getCurrentStepRevertStatements() {
-//		int stepNumber=getCurrentStep();
-//		if (stepNumber==UNSET_STEP)
-//			throw new IllegalStateException("The step number has not been set");
-//
-//		List<List<String>> statements=revertStatementsRef.get();
-//		if (statements==null
-//				|| stepNumber < 0
-//				|| stepNumber >= statements.size()) {
-//			return null;
-//		}
-//		else {
-//			return statements.get(stepNumber);
-//		}
-//	}
-
-
 	/**
 	 *
 	 *
@@ -636,40 +578,7 @@ public class CQLLoader {
 		else {
 			return false;
 		}
-
-//		if (hasNextStep(Direction.UP)) {
-//			stepNumber+=1;
-//			executeStep(Direction.UP,stepNumber);
-//			setCurrentStep(stepNumber);
-//			return true;
-//		}
-//		else {
-//			return false;
-//		}
 	}
-
-
-//	/**
-//	 * Starting at the current step, continues calling up() until reaching the
-//	 * specified step (inclusive)
-//	 *
-//	 */
-//	public synchronized boolean upTo(int stepNumberInclusive)
-//			throws SQLException {
-//
-//		boolean result=false;
-//
-////		ensureStep(Direction.UP);
-////
-////		while (result=hasNextStep(Direction.UP)) {
-////			if (getCurrentStep() > stepNumberInclusive)
-////				break;
-////
-////			up();
-////		}
-//
-//		return result;
-//	}
 
 
 	/**
@@ -707,39 +616,7 @@ public class CQLLoader {
 		else {
 			return false;
 		}
-
-//		if (hasNextStep(Direction.DOWN)) {
-//			stepNumber-=1;
-//			setCurrentStep(stepNumber);
-//			return true;
-//		}
-//		else {
-//			return false;
-//		}
 	}
-
-
-//	/**
-//	 * Starting at the current step, continues calling down() until reaching
-//	 * the specified step (inclusive)
-//	 *
-//	 */
-//	public synchronized boolean downTo(int stepNumberInclusive)
-//			throws SQLException {
-//
-//		boolean result=false;
-//
-//		ensureStep(Direction.DOWN);
-//
-//		while (result=hasNextStep(Direction.UP)) {
-//			if (getCurrentStep() < stepNumberInclusive)
-//				break;
-//
-//			down();
-//		}
-//
-//		return result;
-//	}
 
 
 	/**
@@ -759,76 +636,6 @@ public class CQLLoader {
 				break;
 		}
 	}
-
-
-//	/**
-//	 *
-//	 *
-//	 */
-//	public synchronized boolean nextStep(Direction direction)
-//		throws SQLException
-//	{
-//		if (!hasStep(direction))
-//			return false;
-//
-//		ensureStep(direction);
-//		int stepNumber=getCurrentStep();
-//
-//		List<String> statements;
-//		switch (direction) {
-//			case UP:
-//				statements=getStepStatements();
-//				break;
-//
-//			case DOWN:
-//				statements=getCurrentStepRevertStatements();
-//				break;
-//
-//			default:
-//				statements=null;
-//		}
-//
-//		assert statements!=null:
-//			"Variable \"statements\" should not be null";
-//		assert stepNumber!=UNSET_STEP:
-//			"Step number was not set";
-//
-//		// Execute the statements
-//		log("Executing step "+stepNumber+"...");
-//
-//		execute(statements);
-//
-//		log("Done executing step "+stepNumber+".");
-//
-//		// Increment the step number
-//		int increment=0;
-//		switch (direction) {
-//			case UP:
-//				increment=1;
-//				break;
-//			case DOWN:
-//				increment=-1;
-//				break;
-//		}
-//
-//		boolean result=true;
-//		if (!hasNextStep(direction)) {
-//			System.out.println("No more steps");
-//			result=false;
-//		}
-//
-//		// Increment the step
-//		stepNumber+=increment;
-//		if (stepNumber < 0)
-//			stepNumber=-1;
-//
-//		if (stepNumber > getNumSteps())
-//			stepNumber=getNumSteps()-1;
-//
-//		setCurrentStep(stepNumber);
-//
-//		return result;
-//	}
 
 
 	/**
@@ -1005,10 +812,10 @@ public class CQLLoader {
 								step.getStatements().addAll(
 									normalizeCQLBuffer(buffer));
 								result.add(step);
-System.out.printf("Added step %d [%s] %d\n",result.size()-1,step.getName(),statements.size());
+//System.out.printf("Added step %d [%s] %d\n",result.size()-1,step.getName(),statements.size());
 							}
 							else {
-System.out.printf("Skipped empty step [%s]\n",step.getName());
+//System.out.printf("Skipped empty step [%s]\n",step.getName());
 							}
 
 							buffer=new StringBuilder();
@@ -1037,10 +844,10 @@ System.out.printf("Skipped empty step [%s]\n",step.getName());
 			if (!statements.isEmpty()) {
 				step.getStatements().addAll(normalizeCQLBuffer(buffer));
 				result.add(step);
-System.out.printf("Added step %d [%s] %d\n",result.size()-1,step.getName(),statements.size());
+//System.out.printf("Added step %d [%s] %d\n",result.size()-1,step.getName(),statements.size());
 			}
 			else {
-System.out.printf("Skipped empty step [%s]\n",step.getName());
+//System.out.printf("Skipped empty step [%s]\n",step.getName());
 			}
 
 			return result;
@@ -1270,7 +1077,7 @@ System.out.printf("Skipped empty step [%s]\n",step.getName());
 	private static final int UNSET_STEP=-1;
 
 	private Connection connection;
-	private Class relativeToClass;
+	private Class<?> relativeToClass;
 	private ClassLoader defaultClassLoader;
 	private int stepRange=DEFAULT_RANGE;
 	private int currentStep=0; //UNSET_STEP;

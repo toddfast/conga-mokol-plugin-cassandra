@@ -1,18 +1,33 @@
 package com.conga.tools.mokol.plugin.cassandra.cql.schema;
 
-import com.conga.tools.mokol.Shell;
-import com.conga.tools.mokol.ShellException;
+import com.conga.tools.mokol.CommandContext;
+import com.conga.tools.mokol.plugin.cassandra.CassandraPluginBase;
 import com.conga.tools.mokol.plugin.cassandra.cql.ConnectCommand;
 import com.conga.tools.mokol.plugin.cassandra.cql.DisconnectCommand;
-import com.conga.tools.mokol.spi.AbstractPlugin;
-import com.conga.tools.mokol.spi.CommandClassFactory;
+import com.conga.tools.mokol.spi.annotation.Command;
+import com.conga.tools.mokol.spi.annotation.Plugin;
 import java.util.Map;
 
 /**
  *
+ * 
  * @author Todd Fast
  */
-public class SchemaPlugin extends AbstractPlugin {
+@Plugin(
+	commands={
+		@Command(alias="connect", command=ConnectCommand.class),
+		@Command(alias="disconnect", command=DisconnectCommand.class),
+		@Command(alias="schema", command=SchemaCommand.class),
+		@Command(alias="skip", command=ChangeSkipExecutionCommand.class),
+		@Command(alias="steps", command=ShowStepsCommand.class),
+		@Command(alias="step", command=StepCommand.class),
+		@Command(alias="cs", command=StepCommand.class),
+		@Command(alias="up", command=UpCommand.class),
+		@Command(alias="++", command=UpCommand.class),
+		@Command(alias="down", command=DownCommand.class),
+		@Command(alias="--", command=DownCommand.class)
+	})
+public class SchemaPlugin extends CassandraPluginBase {
 
 	/**
 	 *
@@ -68,58 +83,98 @@ public class SchemaPlugin extends AbstractPlugin {
 	 *
 	 *
 	 */
-	@Override
-	public void initialize(Shell shell) throws ShellException {
+	@Command(alias="load")
+	public LoadCommand load(CommandContext context) {
+		return new LoadCommand(LoadCommand.Action.NOTHING);
+	}
 
-		shell.aliasCommand("connect",this,
-			new CommandClassFactory(ConnectCommand.class));
-		shell.aliasCommand("disconnect",this,
-			new CommandClassFactory(DisconnectCommand.class));
 
-		shell.aliasCommand("schema",this,
-			new CommandClassFactory(SchemaCommand.class));
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="load++")
+	public LoadCommand loadPostIncrement(CommandContext context) {
+		return new LoadCommand(LoadCommand.Action.POST_INCREMENT);
+	}
 
-		shell.aliasCommand("skip",this,
-			new CommandClassFactory(ChangeSkipExecutionCommand.class));
 
-		shell.aliasCommand("steps",this,
-			new CommandClassFactory(ShowStepsCommand.class));
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="load--")
+	public LoadCommand loadPostDecrement(CommandContext context) {
+		return new LoadCommand(LoadCommand.Action.POST_DECREMENT);
+	}
 
-		// Navigation
-		shell.aliasCommand("step",this,
-			new CommandClassFactory(StepCommand.class));
-		shell.aliasCommand("cs",this,
-			new CommandClassFactory(StepCommand.class));
 
-		shell.aliasCommand("up",this,
-			new CommandClassFactory(UpCommand.class));
-		shell.aliasCommand("++",this,
-			new CommandClassFactory(UpCommand.class));
-		shell.aliasCommand("down",this,
-			new CommandClassFactory(DownCommand.class));
-		shell.aliasCommand("--",this,
-			new CommandClassFactory(DownCommand.class));
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="++load")
+	public LoadCommand loadPreIncrement(CommandContext context) {
+		return new LoadCommand(LoadCommand.Action.PRE_INCREMENT);
+	}
 
-		shell.aliasCommand("load",this,
-			new LoadCommand.Factory(LoadCommand.Action.NOTHING));
-		shell.aliasCommand("load++",this,
-			new LoadCommand.Factory(LoadCommand.Action.POST_INCREMENT));
-		shell.aliasCommand("load--",this,
-			new LoadCommand.Factory(LoadCommand.Action.POST_DECREMENT));
-		shell.aliasCommand("++load",this,
-			new LoadCommand.Factory(LoadCommand.Action.PRE_INCREMENT));
-		shell.aliasCommand("--load",this,
-			new LoadCommand.Factory(LoadCommand.Action.PRE_DECREMENT));
 
-		shell.aliasCommand("drop",this,
-			new RevertCommand.Factory(RevertCommand.Action.NOTHING));
-		shell.aliasCommand("drop++",this,
-			new RevertCommand.Factory(RevertCommand.Action.POST_INCREMENT));
-		shell.aliasCommand("drop--",this,
-			new RevertCommand.Factory(RevertCommand.Action.POST_DECREMENT));
-		shell.aliasCommand("++drop",this,
-			new RevertCommand.Factory(RevertCommand.Action.PRE_INCREMENT));
-		shell.aliasCommand("--drop",this,
-			new RevertCommand.Factory(RevertCommand.Action.PRE_DECREMENT));
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="--load")
+	public LoadCommand loadPreDecrement(CommandContext context) {
+		return new LoadCommand(LoadCommand.Action.PRE_DECREMENT);
+	}
+
+
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="drop")
+	public RevertCommand drop(CommandContext context) {
+		return new RevertCommand(RevertCommand.Action.NOTHING);
+	}
+
+
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="drop++")
+	public RevertCommand dropPostIncrement(CommandContext context) {
+		return new RevertCommand(RevertCommand.Action.POST_INCREMENT);
+	}
+
+
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="drop--")
+	public RevertCommand dropPostDecrement(CommandContext context) {
+		return new RevertCommand(RevertCommand.Action.PRE_INCREMENT);
+	}
+
+
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="++drop")
+	public RevertCommand dropPreIncrement(CommandContext context) {
+		return new RevertCommand(RevertCommand.Action.PRE_INCREMENT);
+	}
+
+
+	/**
+	 *
+	 *
+	 */
+	@Command(alias="--drop")
+	public RevertCommand dropPreDecrement(CommandContext context) {
+		return new RevertCommand(RevertCommand.Action.PRE_DECREMENT);
 	}
 }

@@ -34,21 +34,33 @@
 						</goals>
 						<configuration>
 							<artifactSet>
-								<includes>
-									<include>org.apache.cassandra.cql:apache-cassandra-cql</include>
-									<include>org.scale7:scale7-pelops</include>
-								</includes>
+								<excludes>
+									<exclude>com.conga.tools.mokol:conga-mokol</exclude>
+									<exclude>javax.servlet:servlet-api</exclude>
+									<exclude>org.slf4j:slf4j-log4j12</exclude>
+									<exclude>log4j:*</exclude>
+								</excludes>
 							</artifactSet>
+							<!--
 							<relocations>
 								<relocation>
-									<pattern>org.apache.cassandra</pattern>
-									<shadedPattern>com.conga.tools.mokol.plugin.cassandra.lib.org.apache.cassandra</shadedPattern>
+									<pattern>org.apache.cassandra.cql</pattern>
+									<shadedPattern>org.apache.cassandra.cql</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache</pattern>
+									<shadedPattern>com.conga.tools.mokol.plugin.cassandra.lib.org.apache</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.scale7</pattern>
 									<shadedPattern>com.conga.tools.mokol.plugin.cassandra.lib.org.scale7</shadedPattern>
 								</relocation>
+								<relocation>
+									<pattern>com.eaio</pattern>
+									<shadedPattern>com.conga.tools.mokol.plugin.cassandra.lib.com.eaio</shadedPattern>
+								</relocation>
 							</relocations>
+							-->
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -105,10 +117,17 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.scale7</groupId>
 			<artifactId>scale7-pelops</artifactId>
 			<version>1.2-0.8.x</version>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>org.scale7</groupId>
+			<artifactId>scale7-pelops</artifactId>
+			<version>1.3-1.0.x</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cassandra.cql</groupId>
@@ -119,6 +138,22 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>conga-mokol</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cassandra</groupId>
+			<artifactId>cassandra-thrift</artifactId>
+			<version>1.0.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cassandra</groupId>
+			<artifactId>cassandra-all</artifactId>
+			<version>1.0.7</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.thrift</groupId>
+			<artifactId>libthrift</artifactId>
+			<version>0.6.1</version>
 		</dependency>
 	</dependencies>
 </project>

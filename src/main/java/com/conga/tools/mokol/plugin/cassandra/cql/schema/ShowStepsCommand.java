@@ -1,10 +1,10 @@
 package com.conga.tools.mokol.plugin.cassandra.cql.schema;
 
+import com.conga.tools.mokol.CommandContext;
 import com.conga.tools.mokol.plugin.cassandra.cql.AbstractCQLCommand;
 import com.conga.tools.mokol.ShellException;
 import com.conga.tools.mokol.plugin.cassandra.cql.CQLLoader;
 import com.conga.tools.mokol.plugin.cassandra.cql.CQLLoader.Step;
-import com.conga.tools.mokol.spi.CommandContext;
 import com.conga.tools.mokol.spi.annotation.Example;
 import com.conga.tools.mokol.spi.annotation.Help;
 import com.conga.tools.mokol.util.StringUtil;
@@ -35,7 +35,7 @@ public class ShowStepsCommand extends AbstractCQLCommand {
 	 *
 	 */
 	@Override
-	public void doExecute(CommandContext context, List<String> args)
+	public void execute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		if (args.isEmpty()) {

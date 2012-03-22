@@ -1,8 +1,8 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
+import com.conga.tools.mokol.CommandContext;
 import com.conga.tools.mokol.ShellException;
 import com.conga.tools.mokol.plugin.cassandra.ParsedCassandraURL;
-import com.conga.tools.mokol.spi.CommandContext;
 import com.conga.tools.mokol.spi.annotation.Example;
 import com.conga.tools.mokol.spi.annotation.Help;
 import com.conga.tools.mokol.spi.annotation.Switch;
@@ -40,10 +40,10 @@ public class DumpCommand extends AbstractPelopsCommand {
 	 *
 	 */
 	@Override
-	protected void doExecute(CommandContext context, List<String> args)
+	protected void execute(CommandContext context, List<String> args)
 			throws ShellException {
 
-		super.doExecute(context,args);
+		super.execute(context,args);
 
 		long startTime=System.currentTimeMillis();
 

@@ -1,7 +1,7 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
+import com.conga.tools.mokol.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.spi.CommandContext;
 import com.conga.tools.mokol.spi.annotation.Help;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -29,7 +29,7 @@ public class ExecuteCQLCommand extends AbstractCQLCommand {
 	 *
 	 */
 	@Override
-	public void doExecute(CommandContext context, List<String> args)
+	public void execute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		CQLLoader loader=getLoader(context);

@@ -1,10 +1,10 @@
 package com.conga.tools.mokol.plugin.cassandra.cql.schema;
 
+import com.conga.tools.mokol.CommandContext;
 import com.conga.tools.mokol.ShellException;
 import com.conga.tools.mokol.plugin.cassandra.cql.AbstractCQLCommand;
 import com.conga.tools.mokol.plugin.cassandra.cql.CQLLoader;
 import com.conga.tools.mokol.plugin.cassandra.CassandraEnvironment;
-import com.conga.tools.mokol.spi.CommandContext;
 import com.conga.tools.mokol.spi.annotation.Example;
 import com.conga.tools.mokol.spi.annotation.Help;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class SchemaCommand extends AbstractCQLCommand {
 	 * 
 	 */
 	@Override
-	public void doExecute(CommandContext context, List<String> args)
+	public void execute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		try {
@@ -53,7 +53,7 @@ public class SchemaCommand extends AbstractCQLCommand {
 			// Remember this in the environment
 			((SchemaPlugin)getPlugin(context)).putEnvironmentValue(
 				CassandraEnvironment.ENV_RESOURCE_ROOT,resourceRoot);
-		
+
 			updateStepEnvironment(context);
 
 			context.getShell().pushPromptFormat(PROMPT);

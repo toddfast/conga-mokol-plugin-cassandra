@@ -1,7 +1,7 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
+import com.conga.tools.mokol.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.spi.CommandContext;
 import com.conga.tools.mokol.util.ByteArrayUtil;
 import com.conga.tools.mokol.util.TypeConverter;
 import java.io.BufferedWriter;
@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
@@ -33,7 +32,7 @@ public class ExportCommand extends AbstractCQLCommand {
 	 *
 	 */
 	@Override
-	public void doExecute(CommandContext context, List<String> args)
+	public void execute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		CQLLoader loader=getLoader(context);

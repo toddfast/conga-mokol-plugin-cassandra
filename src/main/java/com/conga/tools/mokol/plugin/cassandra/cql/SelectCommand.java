@@ -1,7 +1,7 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
+import com.conga.tools.mokol.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.spi.CommandContext;
 import com.conga.tools.mokol.spi.annotation.Help;
 import com.conga.tools.mokol.spi.annotation.Switch;
 import com.conga.tools.mokol.util.ByteArrayUtil;
@@ -29,7 +29,7 @@ public class SelectCommand extends AbstractCQLCommand {
 	 *
 	 */
 	@Override
-	public void doExecute(CommandContext context, List<String> args)
+	public void execute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		CQLLoader loader=getLoader(context);

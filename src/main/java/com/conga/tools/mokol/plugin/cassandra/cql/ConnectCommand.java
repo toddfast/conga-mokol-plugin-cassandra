@@ -1,8 +1,9 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
+import com.conga.tools.mokol.CommandClassFactory;
+import com.conga.tools.mokol.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.spi.CommandClassFactory;
-import com.conga.tools.mokol.spi.CommandContext;
+import com.conga.tools.mokol.plugin.cassandra.CassandraPluginBase;
 import com.conga.tools.mokol.spi.annotation.Example;
 import com.conga.tools.mokol.spi.annotation.Help;
 import java.io.IOException;
@@ -29,11 +30,11 @@ public class ConnectCommand extends AbstractCQLCommand {
 	 * 
 	 */
 	@Override
-	public void doExecute(CommandContext context, List<String> args)
+	public void execute(CommandContext context, List<String> args)
 			throws ShellException {
 
 		try {
-			CQLLoader loader=getLoader(context);
+			CQLLoader loader=getLoader(context,false);
 			if (loader!=null) {
 				context.getShell().executeCommand("disconnect",
 					new CommandClassFactory(DisconnectCommand.class),null);
@@ -70,9 +71,7 @@ public class ConnectCommand extends AbstractCQLCommand {
 			loader.openConnection();
 
 			// Remember this in the environment
-//			((CQLPlugin)getPlugin(context)).putEnvironmentValue(
-//				Environment.ENV_RESOURCE_ROOT,resourceRoot);
-			((CQLPlugin)getPlugin(context)).putEnvironmentValue(
+			context.getShell().getEnvironment().put(
 				ENV_CQL_LOADER_INSTANCE,loader);
 
 			updateStepEnvironment(context);

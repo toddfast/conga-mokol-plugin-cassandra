@@ -1,18 +1,27 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
-import com.conga.tools.mokol.Shell;
-import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.spi.AbstractPlugin;
-import com.conga.tools.mokol.spi.CommandClassFactory;
+import com.conga.tools.mokol.CommandContext;
+import com.conga.tools.mokol.plugin.cassandra.CassandraPluginBase;
+import com.conga.tools.mokol.spi.annotation.Command;
+import com.conga.tools.mokol.spi.annotation.Plugin;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
  *
+ * 
  * @author Todd Fast
  */
-public class CQLPlugin extends AbstractPlugin {
+@Plugin(
+	commands={
+		@Command(alias="cql", command=ExecuteCQLCommand.class),
+		@Command(alias="select", command=SelectCommand.class),
+		@Command(alias="count", command=CountCommand.class),
+		@Command(alias="export", command=ExportCommand.class),
+		@Command(alias="dump", command=DumpCommand.class)
+	})
+public class CQLPlugin extends CassandraPluginBase {
 
 	/**
 	 *
@@ -24,13 +33,53 @@ public class CQLPlugin extends AbstractPlugin {
 	}
 
 
+//	/**
+//	 *
+//	 *
+//	 */
+//	@Override
+//	protected Map<String,Object> getEnvironment() {
+//		return super.getEnvironment();
+//	}
+//
+//
+//	/**
+//	 *
+//	 *
+//	 */
+//	@Override
+//	protected <T> T getEnvironmentValue(String key, Class<T> clazz) {
+//		return super.getEnvironmentValue(key,clazz);
+//	}
+//
+//
+//	/**
+//	 *
+//	 *
+//	 */
+//	@Override
+//	protected void putEnvironmentValue(String key, Object value) {
+//		super.putEnvironmentValue(key,value);
+//	}
+//
+//
+//	/**
+//	 *
+//	 *
+//	 */
+//	@Override
+//	protected void removeEnvironmentValue(String key) {
+//		super.removeEnvironmentValue(key);
+//	}
+
+
 	/**
 	 *
 	 *
 	 */
-	@Override
-	public String getVersion() {
-		return getClass().getPackage().getImplementationVersion();
+	@Command(alias="update")
+	public CQLUpdateCommand update(CommandContext context) {
+		return new CQLUpdateCommand(CQLUpdateCommand.Verb.UPDATE);
 	}
 
 
@@ -38,66 +87,11 @@ public class CQLPlugin extends AbstractPlugin {
 	 *
 	 *
 	 */
-	@Override
-	protected Map<String,Object> getEnvironment() {
-		return super.getEnvironment();
+	@Command(alias="delete")
+	public CQLUpdateCommand delete(CommandContext context) {
+		return new CQLUpdateCommand(CQLUpdateCommand.Verb.DELETE);
 	}
 
-
-	/**
-	 *
-	 *
-	 */
-	@Override
-	protected <T> T getEnvironmentValue(String key, Class<T> clazz) {
-		return super.getEnvironmentValue(key,clazz);
-	}
-
-
-	/**
-	 *
-	 *
-	 */
-	@Override
-	protected void putEnvironmentValue(String key, Object value) {
-		super.putEnvironmentValue(key,value);
-	}
-
-
-	/**
-	 *
-	 *
-	 */
-	@Override
-	protected void removeEnvironmentValue(String key) {
-		super.removeEnvironmentValue(key);
-	}
-
-
-	/**
-	 *
-	 *
-	 */
-	@Override
-	public void initialize(Shell shell) throws ShellException {
-		shell.aliasCommand("cql",this,
-			new CommandClassFactory(ExecuteCQLCommand.class));
-		shell.aliasCommand("select",this,
-			new CommandClassFactory(SelectCommand.class));
-
-		shell.aliasCommand("update",this,
-			new CQLUpdateCommand.Factory(CQLUpdateCommand.Verb.UPDATE));
-		shell.aliasCommand("delete",this,
-			new CQLUpdateCommand.Factory(CQLUpdateCommand.Verb.DELETE));
-
-		shell.aliasCommand("count",this,
-			new CommandClassFactory(CountCommand.class));
-
-		shell.aliasCommand("export",this,
-			new CommandClassFactory(ExportCommand.class));
-		shell.aliasCommand("dump",this,
-			new CommandClassFactory(DumpCommand.class));
-	}
 
 
 

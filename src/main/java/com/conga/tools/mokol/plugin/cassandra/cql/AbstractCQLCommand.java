@@ -1,15 +1,16 @@
 package com.conga.tools.mokol.plugin.cassandra.cql;
 
+import com.conga.tools.mokol.CommandContext;
 import com.conga.tools.mokol.ShellException;
-import com.conga.tools.mokol.spi.AnnotatedCommand;
-import com.conga.tools.mokol.spi.CommandContext;
-import com.conga.tools.mokol.spi.Usage;
+import com.conga.tools.mokol.plugin.cassandra.ConnectionException;
+import com.conga.tools.mokol.spi.Command;
 
 /**
  *
+ * 
  * @author Todd Fast
  */
-public abstract class AbstractCQLCommand extends AnnotatedCommand {
+public abstract class AbstractCQLCommand extends Command {
 
 	/**
 	 *
@@ -17,8 +18,27 @@ public abstract class AbstractCQLCommand extends AnnotatedCommand {
 	 */
 	protected CQLLoader getLoader(CommandContext context)
 			throws ShellException {
-		return ((CQLPlugin)getPlugin(context)).getEnvironmentValue(
+
+		return getLoader(context,true);
+	}
+
+
+	/**
+	 *
+	 *
+	 */
+	protected CQLLoader getLoader(CommandContext context,
+			boolean checkConnection)
+			throws ShellException {
+
+		CQLLoader result=context.getShell().getEnvironment().get(
 			ENV_CQL_LOADER_INSTANCE,CQLLoader.class);
+
+		if (checkConnection && result==null) {
+			throw new ConnectionException("Not connected");
+		}
+
+		return result;
 	}
 
 
@@ -28,9 +48,10 @@ public abstract class AbstractCQLCommand extends AnnotatedCommand {
 	 */
 	protected void updateStepEnvironment(CommandContext context)
 			throws ShellException {
+
 		CQLLoader loader=getLoader(context);
 		if (loader!=null) {
-			((CQLPlugin)getPlugin(context)).putEnvironmentValue(
+			context.getShell().getEnvironment().put(
 				ENV_STEP,loader.getCurrentStep());
 		}
 	}
