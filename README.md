@@ -1,7 +1,7 @@
 Cassandra plugin for Mokol
 ====
 
-== Features ==
+## Features
 
 * Ability to execute CQL queries against Cassandra
 * Better formatting of query results than the Cassandra CLI
