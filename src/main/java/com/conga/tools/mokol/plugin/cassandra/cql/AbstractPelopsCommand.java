@@ -41,26 +41,30 @@ public abstract class AbstractPelopsCommand extends AbstractCQLCommand {
 
 		setPoolName(context.getCommandAlias());
 
-		ParsedCassandraURL parsedURL=
-			getLoader(context).getParsedURL();
+		if (Pelops.getDbConnPool(context.getCommandAlias())==null) {
 
-System.out.format("Cassandra instance: server = %s, port %d",
-	parsedURL.getServer(),parsedURL.getPort());
+			ParsedCassandraURL parsedURL=
+				getLoader(context).getParsedURL();
 
-		Cluster cluster=new Cluster(parsedURL.getServer(),
-			parsedURL.getPort(),getTimeout(),false);
+//System.out.format("Cassandra instance: server = %s, port %d",
+//	parsedURL.getServer(),parsedURL.getPort());
 
-		CommonsBackedPool.Policy policy=new CommonsBackedPool.Policy(cluster);
-//			policy.setMaxWaitForConnection(30000);
+			Cluster cluster=new Cluster(parsedURL.getServer(),
+				parsedURL.getPort(),getTimeout(),false);
 
-		OperandPolicy operandPolicy=new OperandPolicy();
-		operandPolicy.setMaxOpRetries(5);
+			CommonsBackedPool.Policy policy=
+				new CommonsBackedPool.Policy(cluster);
+	//			policy.setMaxWaitForConnection(30000);
 
-		Pelops.addPool(getPoolName(),cluster,parsedURL.getKeyspace(),
-			policy,operandPolicy);
+			OperandPolicy operandPolicy=new OperandPolicy();
+			operandPolicy.setMaxOpRetries(5);
 
-//		IThriftPool pool=Pelops.getDbConnPool(getPoolName());
-//		pool.getConnection().getAPI().
+			Pelops.addPool(getPoolName(),cluster,parsedURL.getKeyspace(),
+				policy,operandPolicy);
+
+//			IThriftPool pool=Pelops.getDbConnPool(getPoolName());
+//			pool.getConnection().getAPI().
+		}
 	}
 
 
