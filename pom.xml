@@ -155,7 +155,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>conga-mokol</artifactId>
-			<version>${project.version}</version>
+			<version>[0.0,)</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cassandra</groupId>
