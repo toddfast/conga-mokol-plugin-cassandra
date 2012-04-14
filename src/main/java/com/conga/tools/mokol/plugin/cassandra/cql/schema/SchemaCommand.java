@@ -7,6 +7,7 @@ import com.conga.tools.mokol.plugin.cassandra.cql.CQLLoader;
 import com.conga.tools.mokol.plugin.cassandra.CassandraEnvironment;
 import com.conga.tools.mokol.spi.annotation.Example;
 import com.conga.tools.mokol.spi.annotation.Help;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.List;
 
@@ -83,5 +84,5 @@ public class SchemaCommand extends AbstractCQLCommand {
 	////////////////////////////////////////////////////////////////////////////
 
 	private static final String PROMPT=
-		"[{"+CassandraEnvironment.ENV_RESOURCE_ROOT+"%s}#{step%d}] ";
+		"[{"+CassandraEnvironment.ENV_RESOURCE_ROOT+"%s}#{step%s}] ";
 }
